@@ -1,5 +1,11 @@
 # wasm3-coremark
-CoreMark 1.0 ported to WebAssembly
+CoreMark 1.0 ported to WebAssembly.
+
+[CoreMark](https://www.eembc.org/coremark) is a simple, yet sophisticated benchmark that is designed specifically to test the functionality of a processor core. Running CoreMark produces a single-number score allowing users to make quick comparisons between processors.
+
+**Source**: https://github.com/eembc/coremark
+
+## Builds
 
 - **coremark.wasm** - WASI app
 - **coremark-minimal.wasm** - Simple wasm module with minimal runtime dependencies
@@ -7,14 +13,55 @@ CoreMark 1.0 ported to WebAssembly
 
 ## Running `WASI` app
 
-Ypu can use any WASI-compatible runtime to run it directly.
+Ypu can use any WASI-compatible runtime to run it directly:
+```sh
+# Wasm3
+wasm3 coremark.wasm
+
+# kanaka/wac
+wax coremark.wasm
+
+# WAMR (wasm-micro-runtime)
+iwasm coremark.wasm
+
+# wasmtime
+wasmtime --optimize coremark.wasm
+
+# WAVM
+wavm run coremark.wasm
+
+# Wasmer
+wasmer run --backend singlepass coremark.wasm
+wasmer run --backend cranelift coremark.wasm
+wasmer run --backend llvm coremark.wasm
+
+# Webassembly.sh
+wapm install coremark
+coremark
+
+# Wasmer-JS (V8)
+wasmer-js run coremark.wasm
+
+# V8 interpreter
+node --wasm-interpret-all $(which wasmer-js) run coremark.wasm
+```
 
 An interesting way to run it, is to drag'n'drop it to [`webassembly.sh`](https://webassembly.sh/) console, then just type:
 ```sh
 coremark
 ```
 
-## Running `minimal`
+## Running `Emscripten` version
+```sh
+python3 -m http.server 8000
+# visit http://localhost:8000/coremark-emcc.html
+```
+Or run using `Node.js`:
+```sh
+node coremark-emcc.js
+```
+
+## Running `minimal` version
 
 1. You need to provide an `u32 env.clock_ms()` function, which should return current time in milliseconds.
 2. Call `f32 run()` function. It should take `12..20` seconds to execute and return a CoreMark result.

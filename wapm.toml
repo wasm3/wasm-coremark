@@ -1,0 +1,17 @@
+[package]
+name = "vshymanskyy/coremark"
+version = "0.1.1"
+description = "CoreMark is a simple, yet sophisticated benchmark that is designed specifically to test the functionality of a processor core."
+readme = "README-WAPM.md"
+repository = "https://github.com/wasm3/wasm3-coremark"
+homepage = "https://www.eembc.org/coremark"
+
+[[module]]
+name = "coremark"
+source = "coremark.wasm"
+abi = "wasi"
+
+[[command]]
+name = "coremark"
+module = "coremark"
+

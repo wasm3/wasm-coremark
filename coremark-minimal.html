@@ -1,0 +1,16 @@
+<html>
+<body>
+  <script>
+    fetch('coremark-minimal.wasm').then(response =>
+      response.arrayBuffer()
+    ).then(bytes =>
+      WebAssembly.instantiate(bytes, { env: {
+            clock_ms: () => Date.now()
+      }})
+    ).then((r) => {
+      let result = r.instance.exports.run()
+      alert(result.toFixed(3))
+    });
+  </script>
+</body>
+</html>

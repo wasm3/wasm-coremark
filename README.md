@@ -20,7 +20,12 @@ coremark
 2. Call `f32 run()` function. It should take `12..20` seconds to execute and return a CoreMark result.
 
 `coremark-minimal.py` is provided as an example of how to load and execute it with Wasm3 engine using `pywasm3`.
-You can also use `coremark-minimal.html` to load it in your browser.
+
+You can also use `coremark-minimal.html` to load it in your browser:
+```sh
+python3 -m http.server 8000
+# visit http://localhost:8000/coremark-minimal.html
+```
 
 ## Build instructions
 

@@ -31,9 +31,9 @@ wasmtime --optimize coremark.wasm
 wavm run coremark.wasm
 
 # Wasmer
-wasmer run --backend singlepass coremark.wasm
-wasmer run --backend cranelift coremark.wasm
-wasmer run --backend llvm coremark.wasm
+wasmer run --singlepass coremark.wasm
+wasmer run --cranelift coremark.wasm
+wasmer run --llvm coremark.wasm
 
 # Webassembly.sh
 wapm install coremark

@@ -53,32 +53,34 @@ coremark
 
 ## Running `Emscripten` version
 
-Open with your browser: https://wasm3.github.io/wasm-coremark/coremark-emcc.html
+You can [**open it with your browser**](https://wasm3.github.io/wasm-coremark/coremark-emcc.html).
 
-Open local version:
+Or, if you need to run a local copy:
 ```sh
 python3 -m http.server 8000
 # visit http://localhost:8000/coremark-emcc.html
 ```
-Or run using `Node.js`:
+
+Using `Node.js`:
 ```sh
 node coremark-emcc.js
 ```
 
 ## Running `minimal` version
 
-1. You need to provide an `u32 env.clock_ms()` function, which should return current time in milliseconds.
-2. Call `f32 run()` function. It should take `12..20` seconds to execute and return a CoreMark result.
-
-`coremark-minimal.py` is provided as an example of how to load and execute it with Wasm3 engine using `pywasm3`.
-
-You can open also open with your browser: https://wasm3.github.io/wasm-coremark/coremark-minimal.html
+You can [**open it with your browser**](https://wasm3.github.io/wasm-coremark/coremark-minimal.html).
 
 Or, if you need to run a local copy:
 ```sh
 python3 -m http.server 8000
 # visit http://localhost:8000/coremark-minimal.html
 ```
+
+`coremark-minimal.py` is provided as an example of how to load and execute it with Wasm3 engine using `pywasm3`.
+
+To run with any wasm runtime:
+1. You need to provide an `u32 env.clock_ms()` function, which should return current time in milliseconds.
+2. Call `f32 run()` function. It should take `12..20` seconds to execute and return a CoreMark result.
 
 ## Build instructions
 

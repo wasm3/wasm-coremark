@@ -5,6 +5,8 @@ CoreMark 1.0 ported to WebAssembly.
 
 **Source**: https://github.com/eembc/coremark
 
+**Online demo**: [here](https://wasm3.github.io/wasm-coremark/coremark-minimal.html)
+
 ## Builds
 
 - **coremark.wasm** - WASI app

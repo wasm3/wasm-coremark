@@ -52,6 +52,10 @@ coremark
 ```
 
 ## Running `Emscripten` version
+
+Open with your browser: https://wasm3.github.io/wasm-coremark/coremark-emcc.html
+
+Open local version:
 ```sh
 python3 -m http.server 8000
 # visit http://localhost:8000/coremark-emcc.html
@@ -68,7 +72,9 @@ node coremark-emcc.js
 
 `coremark-minimal.py` is provided as an example of how to load and execute it with Wasm3 engine using `pywasm3`.
 
-You can also use `coremark-minimal.html` to load it in your browser:
+You can open also open with your browser: https://wasm3.github.io/wasm-coremark/coremark-minimal.html
+
+Or, if you need to run a local copy:
 ```sh
 python3 -m http.server 8000
 # visit http://localhost:8000/coremark-minimal.html

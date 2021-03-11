@@ -1,16 +1,39 @@
 <html>
-<body>
+<head>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #222;
+      color: white;
+    }
+  </style>
   <script>
-    fetch('coremark-minimal.wasm').then(response =>
-      response.arrayBuffer()
-    ).then(bytes =>
-      WebAssembly.instantiate(bytes, { env: {
-            clock_ms: () => Date.now()
-      }})
-    ).then((r) => {
-      let result = r.instance.exports.run()
-      alert(result.toFixed(3))
-    });
+  
+    async function runCoreMark() {
+        function log(x) { document.querySelector("#log").innerHTML += (x + "<br/>"); }
+        function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
+
+        log("Loading WebAssembly...");
+
+        const response = await fetch('coremark-minimal.wasm');
+        const buffer = await response.arrayBuffer();
+        const res = await WebAssembly.instantiate(buffer, {
+            env: {
+                clock_ms: () => Date.now()
+            }
+        });
+
+        log("Running CoreMark 1.0... [should take 12..20 seconds]");
+
+        await delay(100);
+        const result = res.instance.exports.run();
+
+        log("Result: " + result.toFixed(3));
+    }
+
   </script>
+</head>
+<body onload="runCoreMark()">
+    <div id="log"/>
 </body>
 </html>

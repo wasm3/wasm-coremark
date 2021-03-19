@@ -72,13 +72,10 @@ node coremark-emcc.js
 
 You can [**open it with your browser**](https://wasm3.github.io/wasm-coremark/coremark-minimal.html).
 
-Or, if you need to run a local copy:
-```sh
-python3 -m http.server 8000
-# visit http://localhost:8000/coremark-minimal.html
-```
-
-`coremark-minimal.py` is provided as an example of how to load and execute it with Wasm3 engine using `pywasm3`.
+Here are some examples of how to load and execute it using different engines:
+- [`coremark-minimal.html`](./coremark-minimal.html) - **JavaScript** example using your browser's engine.
+- [`coremark-minimal.py`](./coremark-minimal.py) - **Python 3** example using `Wasm3` engine.
+- [`wasmi-coremark`](https://github.com/patractlabs/wasm-coremark) - **Rust** example using `Wasmtime`, `Wasm3`, `wasmi`.
 
 To run with any wasm runtime:
 1. You need to provide an `u32 env.clock_ms()` function, which should return current time in milliseconds.

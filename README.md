@@ -15,7 +15,9 @@ CoreMark 1.0 ported to WebAssembly.
 
 ## Running `WASI` app
 
-Ypu can use any WASI-compatible runtime to run it directly:
+You can [**open it with your browser**](https://webassembly.sh/?run-command=coremark).
+
+Use any WASI-compatible runtime to run it directly:
 ```sh
 # Wasm3
 wasm3 coremark.wasm
@@ -23,11 +25,8 @@ wasm3 coremark.wasm
 # kanaka/wac
 wax coremark.wasm
 
-# WAMR (wasm-micro-runtime)
-iwasm coremark.wasm
-
 # wasmtime
-wasmtime --optimize coremark.wasm
+wasmtime coremark.wasm
 
 # WAVM
 wavm run coremark.wasm
@@ -37,27 +36,18 @@ wasmer run --singlepass coremark.wasm
 wasmer run --cranelift coremark.wasm
 wasmer run --llvm coremark.wasm
 
-# Webassembly.sh
-wapm install coremark
-coremark
-
 # Wasmer-JS (V8)
 wasmer-js run coremark.wasm
 
-# V8 interpreter
+# Wasmer-JS (V8 interpreter)
 node --wasm-interpret-all $(which wasmer-js) run coremark.wasm
-```
-
-An interesting way to run it, is to drag'n'drop it to [`webassembly.sh`](https://webassembly.sh/) console, then just type:
-```sh
-coremark
 ```
 
 ## Running `Emscripten` version
 
 You can [**open it with your browser**](https://wasm3.github.io/wasm-coremark/coremark-emcc.html).
 
-Or, if you need to run a local copy:
+Run a local copy:
 ```sh
 python3 -m http.server 8000
 # visit http://localhost:8000/coremark-emcc.html

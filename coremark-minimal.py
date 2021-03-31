@@ -12,12 +12,12 @@ def clock_ms():
     return int(round(time.time() * 1000))
 
 env = wasm3.Environment()
-rt = env.new_runtime(2048)
+rt = env.new_runtime(4096)
 
 with open(wasm_fn, "rb") as f:
     mod = env.parse_module(f.read())
     rt.load(mod)
-    mod.link_function("env", "clock_ms", "i()", clock_ms)
+    mod.link_function("env", "clock_ms", "I()", clock_ms)
 
 wasm_run = rt.find_function("run")
 

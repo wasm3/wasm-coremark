@@ -19,7 +19,7 @@
         const buffer = await response.arrayBuffer();
         const res = await WebAssembly.instantiate(buffer, {
             env: {
-                clock_ms: () => Date.now()
+                clock_ms: () => BigInt(Date.now())
             }
         });
 

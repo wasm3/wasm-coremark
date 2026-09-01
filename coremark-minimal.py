@@ -21,7 +21,7 @@ with open(wasm_fn, "rb") as f:
 
 wasm_run = rt.find_function("run")
 
-print("Running CoreMark 1.0...")
+print("Running CoreMark 1.01...")
 res = wasm_run()
 
 if res > 1:

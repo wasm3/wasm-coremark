@@ -1,0 +1,10 @@
+/build/
+
+# build.sh outputs
+/coremark.wasm
+/coremark-minimal.wasm
+/coremark-emcc.html
+/coremark-emcc.js
+/coremark-emcc.wasm
+/coremark.elf
+/toolchain.txt

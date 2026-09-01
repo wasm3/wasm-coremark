@@ -1,0 +1,232 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  WASI_SDK_VERSION: "34.0"
+  EMSCRIPTEN_VERSION: "6.0.8"
+  WASM3_RUN_ID: "33458892412"
+  WASM3_ARTIFACT_ID: "9782484102"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install WASI-SDK
+        run: |
+          url="https://github.com/WebAssembly/wasi-sdk/releases/download"
+          url="$url/wasi-sdk-${WASI_SDK_VERSION%%.*}/wasi-sdk-${WASI_SDK_VERSION}-x86_64-linux.tar.gz"
+          curl -sSfL "$url" | tar -xz
+          mv "wasi-sdk-${WASI_SDK_VERSION}-x86_64-linux" "$HOME/wasi-sdk"
+
+      - name: Install Emscripten
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
+          "$HOME/emsdk/emsdk" install "$EMSCRIPTEN_VERSION"
+          "$HOME/emsdk/emsdk" activate "$EMSCRIPTEN_VERSION"
+
+      - name: Build
+        run: |
+          source "$HOME/emsdk/emsdk_env.sh"
+          ./build.sh wasi minimal emcc
+
+      - name: Record toolchain versions
+        run: |
+          source "$HOME/emsdk/emsdk_env.sh"
+          {
+            echo "# WASI"
+            echo "wasi-sdk ${WASI_SDK_VERSION}"
+            "$HOME/wasi-sdk/bin/clang" --version | head -1
+            echo
+            echo "# EMCC"
+            emcc --version | head -1
+            clang --version | head -1
+          } > toolchain.txt
+          cat toolchain.txt
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p dist
+          cp coremark.wasm coremark-minimal.wasm \
+             coremark-emcc.html coremark-emcc.js coremark-emcc.wasm \
+             toolchain.txt dist/
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wasm-coremark
+          path: dist/
+          if-no-files-found: error
+
+  test-wasm3:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: wasm-coremark
+          path: .
+
+      - uses: actions/download-artifact@v7
+        with:
+          repository: wasm3/wasm3
+          run-id: ${{ env.WASM3_RUN_ID }}
+          artifact-ids: ${{ env.WASM3_ARTIFACT_ID }}
+          github-token: ${{ secrets.WASM3_ARTIFACT_TOKEN || github.token }}
+          path: wasm3-artifact
+
+      - name: Install Wasm3
+        run: |
+          mkdir -p "$HOME/bin"
+          wasm3_bin="$(find wasm3-artifact -type f \( -name 'wasm3' -o -name 'wasm3*.elf' -o -name 'wasm3-linux-*' \) | head -1)"
+          if [ -z "$wasm3_bin" ]; then
+            echo "No wasm3 binary found in artifact" >&2
+            exit 1
+          fi
+          cp "$wasm3_bin" "$HOME/bin/wasm3"
+          chmod +x "$HOME/bin/wasm3"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Test with Wasm3
+        run: |
+          wasm3 --version
+          wasm3 coremark.wasm
+          wasm3 --func run coremark-minimal.wasm
+
+  test-node:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: wasm-coremark
+          path: .
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test with Node.js
+        run: |
+          node --version
+          node coremark-minimal.mjs
+          node coremark-emcc.js
+
+  test-python:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: wasm-coremark
+          path: .
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Test with Python
+        run: |
+          python3 -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install pywasm3
+          python coremark-minimal.py
+
+  test-wasmtime:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: wasm-coremark
+          path: .
+
+      - name: Install Wasmtime
+        run: |
+          curl -sSfL https://wasmtime.dev/install.sh | bash
+          echo "$HOME/.wasmtime/bin" >> "$GITHUB_PATH"
+
+      - name: Test with Wasmtime
+        run: |
+          wasmtime --version
+          wasmtime coremark.wasm
+
+  # The demo pages served from https://wasm3.github.io/wasm-coremark
+  pages:
+    if: github.ref == 'refs/heads/main'
+    needs: [build, test-wasm3, test-node, test-python, test-wasmtime]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: wasm-coremark
+          path: site
+
+      - name: Add the hand-written page
+        run: cp coremark-minimal.* site/
+
+      # Nothing renders README.md on its own here: upload-pages-artifact serves
+      # the directory verbatim, with none of the Jekyll pass that branch-based
+      # Pages used to run. Without an index.html the site root is a 404.
+      - name: Render README.md as the site index
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          jq -Rs '{text: ., mode: "gfm"}' README.md \
+            | gh api --method POST /markdown --input - > body.html
+          # Only the demo pages ship here; send the rest back to the repo.
+          sed -i -E "s#(href|src)=\"\./#\1=\"https://github.com/$REPO/blob/main/#g" body.html
+          sed -e '/{{CONTENT}}/r body.html' -e '/{{CONTENT}}/d' \
+            .github/pages/index.html > site/index.html
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v5
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build, test-wasm3, test-node, test-python, test-wasmtime]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: wasm-coremark
+          path: dist
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag dist/*

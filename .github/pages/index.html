@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+  Shell for the GitHub Pages index. The workflow renders README.md through the
+  GitHub markdown API and splices the result in place of the marker below.
+  Keep that marker on a line of its own, and mention it nowhere else: the
+  workflow substitutes every line that matches it.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>wasm-coremark</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --fg: #1f2328;
+    --bg: #ffffff;
+    --muted: #59636e;
+    --border: #d1d9e0;
+    --link: #0969da;
+    --code-bg: #f6f8fa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fg: #f0f6fc;
+      --bg: #0d1117;
+      --muted: #9198a1;
+      --border: #3d444d;
+      --link: #4493f8;
+      --code-bg: #151b23;
+    }
+  }
+  body {
+    margin: 0 auto;
+    padding: 32px 16px 64px;
+    max-width: 860px;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+          Helvetica, Arial, sans-serif;
+  }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1, h2, h3 { line-height: 1.25; margin: 24px 0 16px; font-weight: 600; }
+  h1, h2 { padding-bottom: .3em; border-bottom: 1px solid var(--border); }
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; }
+  p, ul, ol { margin: 0 0 16px; }
+  li { margin: .25em 0; }
+  code {
+    padding: .2em .4em;
+    background: var(--code-bg);
+    border-radius: 6px;
+    font: 85%/1.45 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+          "Liberation Mono", monospace;
+  }
+  pre {
+    padding: 16px;
+    overflow: auto;
+    background: var(--code-bg);
+    border-radius: 6px;
+  }
+  pre code { padding: 0; background: none; }
+  table { display: block; overflow: auto; border-collapse: collapse; margin: 0 0 16px; }
+  th, td { padding: 6px 13px; border: 1px solid var(--border); }
+  tr:nth-child(2n) td { background: var(--code-bg); }
+  img { max-width: 100%; }
+  .footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+{{CONTENT}}
+<p class="footer">
+  Rendered from <a href="https://github.com/wasm3/wasm-coremark">README.md</a>.
+</p>
+</body>
+</html>

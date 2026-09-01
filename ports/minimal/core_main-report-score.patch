@@ -1,0 +1,17 @@
+--- a/core_main.c	2026-08-31 22:35:46.010304164 +0000
++++ b/core_main.c	2026-08-31 22:35:46.026216170 +0000
+@@ -438,5 +438,14 @@
+     /* And last call any target specific code for finalizing */
+     portable_fini(&(results[0].port));
+ 
++#ifdef CORE_REPORT_SCORE
++    /* Ports that have nowhere to print to take the score this way instead. */
++    coremark_report_score(
++        total_errors == 0
++            ? (double)(default_num_contexts * results[0].iterations)
++                  / time_in_secs(total_time)
++            : 0);
++#endif
++
+     return MAIN_RETURN_VAL;
+ }
